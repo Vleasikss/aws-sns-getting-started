@@ -1,7 +1,8 @@
 package org.example
 
+import com.amazonaws.services.shield.model.CreateSubscriptionRequest
 import com.amazonaws.services.sns.{AmazonSNS, AmazonSNSClient}
-import com.amazonaws.services.sns.model.{CreateTopicRequest, CreateTopicResult, PublishRequest}
+import com.amazonaws.services.sns.model.{CreateTopicRequest, CreateTopicResult, GetTopicAttributesResult, PublishRequest, SubscribeResult}
 import org.apache.log4j.PropertyConfigurator
 
 import java.util.{Properties, UUID}
@@ -49,6 +50,9 @@ object Main extends Logging {
     val response = amazonSNS.publish(request)
     logger.info(s"send message to a topic: $topicArn, message=$message, subject=$subject, messageId=${response.getMessageId}")
   }
+  private def createSubscription(amazonSNS: AmazonSNS, topicArn: String, protocol: String, endpoint: String): SubscribeResult = {
+    amazonSNS.subscribe(topicArn, protocol, endpoint)
+  }
 
   /**
    * Sends a SMS message by a phone number
@@ -80,7 +84,7 @@ object Main extends Logging {
     //    val topic: SubscribeResult = snsClient.subscribe(subscribeTopicRequest)
 
     sendMailMessage(snsClient, EMAIL_TOPIC_ARN, "Hello Mail notification SNS 1", "subject1")
-    sendPhoneNumberMessage(snsClient, SMS_TOPIC_ARN, "Hello Mail notification SNS 2", PHONE_NUMBER)
+//    sendPhoneNumberMessage(snsClient, EMAIL_TOPIC_ARN, "Hello Mail notification SNS 2", PHONE_NUMBER)
 
 
   }
